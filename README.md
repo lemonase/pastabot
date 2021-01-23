@@ -5,7 +5,7 @@ It fetches submissions from /r/copypasta and writes them in Discord.
 
 ## Commands (so far)
 
-Command Prefix(es) = "pasta!" | "pastabot!" | "pb!" | "p!"
+Command Prefix(es) = `pasta!` | `pastabot!` | `pb!` | `p!`
 
 Commands:
 - `get [hot|top|new] count` Return a singular copypasta that is <count> posts from the top.
