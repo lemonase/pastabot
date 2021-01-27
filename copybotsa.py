@@ -21,10 +21,13 @@ def generate_emoji(num_emojis: int) -> str:
 
 def set_basic_logging():
     logging.basicConfig(
-        filename="pastabot.log",
         encoding="utf-8",
         format="%(asctime)s:%(name)s:%(levelname)s - %(message)s",
         level=logging.INFO,
+        handlers=[
+            logging.FileHandler("copybotsa.log"),
+            logging.StreamHandler()
+        ]
     )
 
 
@@ -32,7 +35,7 @@ def set_advanced_logging():
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.INFO)
 
-    file_handler = logging.FileHandler(filename="pastabot.log",
+    file_handler = logging.FileHandler(filename="copybotsa.log",
                                        encoding="utf-8")
     stdout_handler = logging.StreamHandler(sys.stdout)
 
