@@ -10,13 +10,11 @@ from dotenv import load_dotenv
 
 
 def generate_emoji(num_emojis: int) -> str:
-    emojis = [
-        "🙄", "😙", "😐", "🤤", "😤", "😲", "😬", "😭", "🥵", "🥺", "🤠", "🤫", "😳", "😢"
-    ]
-    s: str = ""
-    for i in range(num_emojis):
-        s += random.choice(emojis) + "🍝"
-    return s
+    emojis = ["🙄", "😙", "😐", "🤤", "😤", "😲", "😬", "😭", "🥵", "🥺", "🤠", "🤫", "😳", "😢"]
+    output: str = ""
+    for _ in range(num_emojis):
+        output += random.choice(emojis) + "🍝"
+    return output
 
 
 def set_basic_logging():
@@ -24,10 +22,7 @@ def set_basic_logging():
         encoding="utf-8",
         format="%(asctime)s:%(name)s:%(levelname)s - %(message)s",
         level=logging.INFO,
-        handlers=[
-            logging.FileHandler("copybotsa.log"),
-            logging.StreamHandler()
-        ]
+        handlers=[logging.FileHandler("copybotsa.log"), logging.StreamHandler()],
     )
 
 
@@ -35,20 +30,20 @@ def set_advanced_logging():
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.INFO)
 
-    file_handler = logging.FileHandler(filename="copybotsa.log",
-                                       encoding="utf-8")
+    file_handler = logging.FileHandler(filename="copybotsa.log", encoding="utf-8")
     stdout_handler = logging.StreamHandler(sys.stdout)
 
     file_handler.setFormatter(
-        logging.Formatter("%(asctime)s:%(levelname)s:%(name)s: %(message)s"))
+        logging.Formatter("%(asctime)s:%(levelname)s:%(name)s: %(message)s")
+    )
 
     logger.addHandler(file_handler)
     logger.addHandler(stdout_handler)
 
 
 def get_reddit_posts(
-        sort_type: str,
-        num: int = 100) -> praw.models.listing.generator.ListingGenerator:
+    sort_type: str, num: int = 100
+) -> praw.models.listing.generator.ListingGenerator:
     posts = []
     if sort_type == "random":
         sort_type = random.choice(["hot", "top", "new"])
@@ -80,8 +75,7 @@ def create_bot_commands():
         posts = get_reddit_posts(sort_type, post_limit)
 
         for i, post in enumerate(posts):
-            await ctx.send(sort_type + " post: " + str(i + 1) + ": " +
-                           post.title)
+            await ctx.send(sort_type + " post: " + str(i + 1) + ": " + post.title)
 
     @bot.command(
         help="""Get a specific post from a sorting type.
@@ -94,8 +88,7 @@ def create_bot_commands():
 
         for i, post in enumerate(posts):
             if i == post_limit - 1:
-                await ctx.send(sort_type + " pasta #" + str(i + 1) + ": " +
-                               post.title)
+                await ctx.send(sort_type + " pasta #" + str(i + 1) + ": " + post.title)
                 if post.selftext:
                     await ctx.send(post.selftext)
                 if post.url:
@@ -125,7 +118,7 @@ def create_bot_commands():
                         await ctx.send(post.selftext)
                     else:
                         for m in range(0, len(post.selftext), 1500):
-                            await ctx.send(post.selftext[m:m + 1500])
+                            await ctx.send(post.selftext[m : m + 1500])
 
                 if post.url:
                     await ctx.send("sauce: " + post.url)
@@ -157,6 +150,8 @@ def main():
     )
 
     parser.add_argument("--reddit-UA", type=str, default="PastaBot 0.0.1")
+    parser.add_argument("--subreddits", type=str, default="copypasta+emojipasta")
+
     args = parser.parse_args()
 
     if not args.reddit_id:
@@ -184,7 +179,7 @@ def main():
         user_agent="PastaBot 0.0.1",
     )
 
-    pasta_sub = reddit.subreddit("copypasta+emojipasta")
+    pasta_sub = reddit.subreddit(args.subreddits)
 
     help_cmd = commands.DefaultHelpCommand(no_category="Commands")
     description = "I get copypasta posts from Reddit"
@@ -194,16 +189,16 @@ def main():
         help_command=help_cmd,
     )
 
-    logging.info("*"*10)
+    logging.info("*" * 10)
     logging.info("PastaBot has started")
-    logging.info("*"*10)
+    logging.info("*" * 10)
 
     create_bot_commands()
     bot.run(args.discord_bot_token)
 
-    logging.info("*"*10)
+    logging.info("*" * 10)
     logging.info("PastaBot has shut down")
-    logging.info("*"*10)
+    logging.info("*" * 10)
 
 
 set_basic_logging()
