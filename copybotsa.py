@@ -50,15 +50,15 @@ def get_reddit_posts(
         sort_type: str,
         num: int = 100) -> praw.models.listing.generator.ListingGenerator:
     posts = []
-    if sort_type == "random" or sort_type not in ["hot", "top", "new"]:
+    if sort_type == "random":
         sort_type = random.choice(["hot", "top", "new"])
 
-    if sort_type == "hot":
-        posts = pasta_sub.hot(limit=num)
     if sort_type == "top":
         posts = pasta_sub.top(limit=num)
     if sort_type == "new":
         posts = pasta_sub.new(limit=num)
+    else:
+        posts = pasta_sub.hot(limit=num)
 
     logging.info(f"Getting {num} posts from sort type {sort_type}")
 
@@ -66,7 +66,7 @@ def get_reddit_posts(
 
 
 def log_discord_command(command_name: str, discord_user: str):
-    logging.info(f'🍝 {command_name} command issued by "{discord_user}" 🍝')
+    logging.info(f'"{command_name}" command issued by "{discord_user}"')
 
 
 def create_bot_commands():
@@ -137,10 +137,6 @@ def main():
 
     load_dotenv()
 
-    # discord_bot_token = os.environ.get('DISCORD_BOT_TOKEN')
-    # reddit_id = os.environ.get('REDDIT_ID')
-    # reddit_secret = os.environ.get('REDDIT_SECRET')
-
     parser = argparse.ArgumentParser(description="pasta_bot options")
     parser.add_argument(
         "--discord-bot-token",
@@ -198,16 +194,16 @@ def main():
         help_command=help_cmd,
     )
 
-    logging.info(generate_emoji(6))
+    logging.info("*"*10)
     logging.info("PastaBot has started")
-    logging.info(generate_emoji(6))
+    logging.info("*"*10)
 
     create_bot_commands()
     bot.run(args.discord_bot_token)
 
-    logging.info(generate_emoji(6))
+    logging.info("*"*10)
     logging.info("PastaBot has shut down")
-    logging.info(generate_emoji(6))
+    logging.info("*"*10)
 
 
 set_basic_logging()
