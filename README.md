@@ -64,3 +64,12 @@ python3 copybotsa.py
 
 - [PRAW](https://github.com/praw-dev/praw)
 - [Discord.py](https://github.com/Rapptz/discord.py)
+
+## TODOs
+
+- Make a more helpful/prettier help message
+- Have bot respond when someone mentions @PastaBot
+- Show Upvotes/Downvotes in title
+
+- Store logs somewhere other than the project root
+- Read settings like user_agent, subreddits, default_post_limit, credentials, etc., from a configuration file

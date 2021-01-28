@@ -17,6 +17,8 @@ def generate_emoji(num_emojis: int) -> str:
     return output
 
 
+# TODO: Add configuration to control logging
+# and put logs somewhere that makes sense
 def set_basic_logging():
     logging.basicConfig(
         encoding="utf-8",
@@ -64,6 +66,8 @@ def log_discord_command(command_name: str, discord_user: str):
     logging.info(f'"{command_name}" command issued by "{discord_user}"')
 
 
+# TODO: abstract out a function that iterates through posts, shows title
+#       have bot respond to mentions
 def create_bot_commands():
     @bot.command(
         help="""Lists a number posts from a sort type.
@@ -74,6 +78,7 @@ def create_bot_commands():
         log_discord_command("list", ctx.author)
         posts = get_reddit_posts(sort_type, post_limit)
 
+        # TODO: show upvotes/downvotes in title
         for i, post in enumerate(posts):
             await ctx.send(sort_type + " post: " + str(i + 1) + ": " + post.title)
 
@@ -118,7 +123,7 @@ def create_bot_commands():
                         await ctx.send(post.selftext)
                     else:
                         for m in range(0, len(post.selftext), 1500):
-                            await ctx.send(post.selftext[m : m + 1500])
+                            await ctx.send(post.selftext[m:m + 1500])
 
                 if post.url:
                     await ctx.send("sauce: " + post.url)
@@ -154,6 +159,7 @@ def main():
 
     args = parser.parse_args()
 
+    # TODO: Read from a configuration file where options can be specified
     if not args.reddit_id:
         print(
             "Error: please supply REDDIT_ID as environment variable or flag",
@@ -181,6 +187,7 @@ def main():
 
     pasta_sub = reddit.subreddit(args.subreddits)
 
+    # TODO: Create a better help message
     help_cmd = commands.DefaultHelpCommand(no_category="Commands")
     description = "I get copypasta posts from Reddit"
     bot = commands.Bot(
