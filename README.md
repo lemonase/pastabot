@@ -26,11 +26,14 @@ The script currently needs some API credentials from both Discord and Reddit.
 1. Go to the Discord API portal:
    https://discord.com/developers/applications
 
-2. Create a discord bot application
+2. Create a discord application with any name
 
-3. Copy the "Client ID"
+3. Go to the "Bot" tab on the left
 
-4. Set environment variable `DISCORD_BOT_TOKEN=<client id>`
+4. Under "Build A Bot" there will be a token with a Copy button.
+Copy that token
+
+5. Set environment variable `DISCORD_BOT_TOKEN=<YOUR_BOT_TOKEN>`
 
 ### Reddit ID and Secret
 
