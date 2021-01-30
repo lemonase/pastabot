@@ -10,7 +10,9 @@ from dotenv import load_dotenv
 
 
 def generate_emoji(num_emojis: int) -> str:
-    emojis = ["🙄", "😙", "😐", "🤤", "😤", "😲", "😬", "😭", "🥵", "🥺", "🤠", "🤫", "😳", "😢"]
+    emojis = [
+        "🙄", "😙", "😐", "🤤", "😤", "😲", "😬", "😭", "🥵", "🥺", "🤠", "🤫", "😳", "😢"
+    ]
     output: str = ""
     for _ in range(num_emojis):
         output += random.choice(emojis) + "🍝"
@@ -21,10 +23,12 @@ def generate_emoji(num_emojis: int) -> str:
 # and put logs somewhere that makes sense
 def set_basic_logging():
     logging.basicConfig(
-        encoding="utf-8",
         format="%(asctime)s:%(name)s:%(levelname)s - %(message)s",
         level=logging.INFO,
-        handlers=[logging.FileHandler("pastabot.log"), logging.StreamHandler()],
+        handlers=[
+            logging.FileHandler("pastabot.log"),
+            logging.StreamHandler()
+        ],
     )
 
 
@@ -32,20 +36,20 @@ def set_advanced_logging():
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.INFO)
 
-    file_handler = logging.FileHandler(filename="pastabot.log", encoding="utf-8")
+    file_handler = logging.FileHandler(filename="pastabot.log",
+                                       encoding="utf-8")
     stdout_handler = logging.StreamHandler(sys.stdout)
 
     file_handler.setFormatter(
-        logging.Formatter("%(asctime)s:%(levelname)s:%(name)s: %(message)s")
-    )
+        logging.Formatter("%(asctime)s:%(levelname)s:%(name)s: %(message)s"))
 
     logger.addHandler(file_handler)
     logger.addHandler(stdout_handler)
 
 
 def get_reddit_posts(
-    sort_type: str, num: int = 100
-) -> praw.models.listing.generator.ListingGenerator:
+        sort_type: str,
+        num: int = 100) -> praw.models.listing.generator.ListingGenerator:
     posts = []
     if sort_type == "random":
         sort_type = random.choice(["hot", "top", "new"])
@@ -80,7 +84,8 @@ def create_bot_commands():
 
         # TODO: show upvotes/downvotes in title
         for i, post in enumerate(posts):
-            await ctx.send(sort_type + " post: " + str(i + 1) + ": " + post.title)
+            await ctx.send(sort_type + " post: " + str(i + 1) + ": " +
+                           post.title)
 
     @bot.command(
         help="""Get a specific post from a sorting type.
@@ -93,7 +98,8 @@ def create_bot_commands():
 
         for i, post in enumerate(posts):
             if i == post_limit - 1:
-                await ctx.send(sort_type + " pasta #" + str(i + 1) + ": " + post.title)
+                await ctx.send(sort_type + " pasta #" + str(i + 1) + ": " +
+                               post.title)
                 if post.selftext:
                     await ctx.send(post.selftext)
                 if post.url:
@@ -155,7 +161,9 @@ def main():
     )
 
     parser.add_argument("--reddit-UA", type=str, default="PastaBot 0.0.1")
-    parser.add_argument("--subreddits", type=str, default="copypasta+emojipasta")
+    parser.add_argument("--subreddits",
+                        type=str,
+                        default="copypasta+emojipasta")
 
     args = parser.parse_args()
 
