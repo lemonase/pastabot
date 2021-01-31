@@ -4,6 +4,7 @@ import os
 import random
 import sys
 
+import discord
 import praw
 from discord.ext import commands
 from dotenv import load_dotenv
@@ -70,14 +71,17 @@ def log_discord_command(command_name: str, discord_user: str):
     logging.info(f'"{command_name}" command issued by "{discord_user}"')
 
 
-# TODO: abstract out a function that iterates through posts, shows title
-#       have bot respond to mentions
 def create_bot_commands():
-    @bot.command(
-        help="""Lists a number posts from a sort type.
-        First arg is sort type and second is number""",
-        aliases=["l", "li"],
-    )
+    @bot.event
+    async def on_ready():
+        logging.info("PastaBot is online")
+        await bot.change_presence(status=discord.Status.online,
+                                  activity=discord.Game('pasta!help'))
+
+    @bot.command(help="""Lists a number posts from a sort type.
+        Arg 1: Sorting type [hot|new|top]
+        Arg 2: Number of submission to fetch""",
+                 aliases=["l", "li"])
     async def list(ctx, sort_type: str, post_limit: int):
         log_discord_command("list", ctx.author)
         posts = get_reddit_posts(sort_type, post_limit)
@@ -87,31 +91,31 @@ def create_bot_commands():
             await ctx.send(sort_type + " post: " + str(i + 1) + ": " +
                            post.title)
 
-    @bot.command(
-        help="""Get a specific post from a sorting type.
-        First arg is sorting type and second is a number""",
-        aliases=["g", "ge"],
-    )
+    @bot.command(help="""Get a specific post from a sorting type.
+        Arg 1: Sorting type [hot|new|top]
+        Arg 2: Number of submission to fetch""",
+                 aliases=["g", "ge"])
     async def get(ctx, sort_type: str, post_limit: int):
         log_discord_command("get", ctx.author)
         posts = get_reddit_posts(sort_type, post_limit)
 
         for i, post in enumerate(posts):
             if i == post_limit - 1:
-                await ctx.send(sort_type + " pasta #" + str(i + 1) + ": " +
-                               post.title)
+                await ctx.send(post.title + "\n")
                 if post.selftext:
-                    await ctx.send(post.selftext)
-                if post.url:
-                    await ctx.send("sauce: " + post.url)
+                    if len(post.selftext) < 2000:
+                        await ctx.send(post.selftext)
+                    else:
+                        for m in range(0, len(post.selftext), 1500):
+                            await ctx.send(post.selftext[m:m + 1500])
+                await ctx.send("sauce: " + post.url)
 
-    @bot.command(
-        help="""Picks a random post (out of 100).
+
+    @bot.command(help="""Picks a random post (out of 100).
         If no sorting is specified, a random one is chosen.
         Optional Arg 1: Sorting type [hot|new|top]
         Optional Arg 2: Max post limit""",
-        aliases=["r", "random"],
-    )
+                 aliases=["r", "random"])
     async def rand(ctx, sort_type: str = "random", post_limit: int = 50):
         log_discord_command(sort_type, ctx.author)
         post_limit = random.randint(1, post_limit)
@@ -119,20 +123,14 @@ def create_bot_commands():
 
         for i, post in enumerate(posts):
             if i == post_limit - 1:
-                await ctx.send(sort_type + " pasta #" + str(i + 1))
-
-                if post.title:
-                    await ctx.send(post.title)
-
+                await ctx.send(post.title + "\n")
                 if post.selftext:
                     if len(post.selftext) < 2000:
                         await ctx.send(post.selftext)
                     else:
                         for m in range(0, len(post.selftext), 1500):
                             await ctx.send(post.selftext[m:m + 1500])
-
-                if post.url:
-                    await ctx.send("sauce: " + post.url)
+                await ctx.send("sauce: " + post.url)
 
 
 def main():
@@ -195,9 +193,21 @@ def main():
 
     pasta_sub = reddit.subreddit(args.subreddits)
 
-    # TODO: Create a better help message
-    help_cmd = commands.DefaultHelpCommand(no_category="Commands")
-    description = "I get copypasta posts from Reddit"
+    help_cmd = commands.DefaultHelpCommand(no_category="Commands", width=120)
+
+    description = """I get copypasta posts from Reddit\n
+    Prefix Aliases are: \"pastabot!\", \"pasta!\", \"pb!\", \"p!\" \n
+    Examples:
+    +-----------------------------------------------------------+
+    | Command       | Description                               |
+    +---------------+-------------------------------------------+
+    | p!rand        | Get random submission from 100 hot pastas |
+    | p!rand top 10 | Get random submission from 10 top pastas  |
+    | p!get new 10  | Get 10th submission from new              |
+    | p!list top 10 | List 10 submissions from top              |
+    +---------------+-------------------------------------------+
+    """
+
     bot = commands.Bot(
         command_prefix=commands.when_mentioned_or("pasta!", "pastabot!", "pb!",
                                                   "p!"),
