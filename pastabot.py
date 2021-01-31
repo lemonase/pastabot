@@ -71,6 +71,29 @@ def log_discord_command(command_name: str, discord_user: str):
     logging.info(f'"{command_name}" command issued by "{discord_user}"')
 
 
+async def print_post_message(ctx, posts, post_limit):
+    for i, post in enumerate(posts):
+        if i == post_limit - 1:
+            await ctx.send(post.title + "\n")
+            if post.selftext:
+                if len(post.selftext) < 2000:
+                    await ctx.send(post.selftext)
+                else:
+                    for m in range(0, len(post.selftext), 1500):
+                        await ctx.send(post.selftext[m:m + 1500])
+            await ctx.send("sauce: " + post.url)
+
+
+async def list_posts_message(ctx, posts, post_limit, sort_type):
+    msg_output = ""
+    for i, post in enumerate(posts):
+        msg_output += "\U00002B06 {}\n".format(post.score)
+        msg_output += "{0} post: {1}: {2}\n\n".format(sort_type, str(i + i),
+                                                      post.title)
+
+    await ctx.send(msg_output)
+
+
 def create_bot_commands():
     @bot.event
     async def on_ready():
@@ -85,11 +108,7 @@ def create_bot_commands():
     async def list(ctx, sort_type: str, post_limit: int):
         log_discord_command("list", ctx.author)
         posts = get_reddit_posts(sort_type, post_limit)
-
-        # TODO: show upvotes/downvotes in title
-        for i, post in enumerate(posts):
-            await ctx.send(sort_type + " post: " + str(i + 1) + ": " +
-                           post.title)
+        await list_posts_message(ctx, posts, post_limit, sort_type)
 
     @bot.command(help="""Get a specific post from a sorting type.
         Arg 1: Sorting type [hot|new|top]
@@ -98,18 +117,7 @@ def create_bot_commands():
     async def get(ctx, sort_type: str, post_limit: int):
         log_discord_command("get", ctx.author)
         posts = get_reddit_posts(sort_type, post_limit)
-
-        for i, post in enumerate(posts):
-            if i == post_limit - 1:
-                await ctx.send(post.title + "\n")
-                if post.selftext:
-                    if len(post.selftext) < 2000:
-                        await ctx.send(post.selftext)
-                    else:
-                        for m in range(0, len(post.selftext), 1500):
-                            await ctx.send(post.selftext[m:m + 1500])
-                await ctx.send("sauce: " + post.url)
-
+        await print_post_message(ctx, posts, post_limit)
 
     @bot.command(help="""Picks a random post (out of 100).
         If no sorting is specified, a random one is chosen.
@@ -120,17 +128,7 @@ def create_bot_commands():
         log_discord_command(sort_type, ctx.author)
         post_limit = random.randint(1, post_limit)
         posts = get_reddit_posts(sort_type, post_limit)
-
-        for i, post in enumerate(posts):
-            if i == post_limit - 1:
-                await ctx.send(post.title + "\n")
-                if post.selftext:
-                    if len(post.selftext) < 2000:
-                        await ctx.send(post.selftext)
-                    else:
-                        for m in range(0, len(post.selftext), 1500):
-                            await ctx.send(post.selftext[m:m + 1500])
-                await ctx.send("sauce: " + post.url)
+        await print_post_message(ctx, posts, post_limit)
 
 
 def main():
