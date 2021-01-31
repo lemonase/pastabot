@@ -199,7 +199,8 @@ def main():
     help_cmd = commands.DefaultHelpCommand(no_category="Commands")
     description = "I get copypasta posts from Reddit"
     bot = commands.Bot(
-        command_prefix=["pasta!", "pastabot!", "pb!", "p!"],
+        command_prefix=commands.when_mentioned_or("pasta!", "pastabot!", "pb!",
+                                                  "p!"),
         description=description,
         help_command=help_cmd,
     )
