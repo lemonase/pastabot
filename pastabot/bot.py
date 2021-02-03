@@ -46,9 +46,7 @@ def get_args():
         default=os.environ.get("REDDIT_SECRET"),
     )
 
-    cmd_parser.add_argument("--reddit-ua",
-                            type=str,
-                            default="PastaBot " + __version__)
+    cmd_parser.add_argument("--reddit-ua", type=str, default="PastaBot " + __version__)
     cmd_parser.add_argument("--subreddits", type=str, default=DEFAULT_SUBS)
 
     args = cmd_parser.parse_args()
@@ -89,34 +87,44 @@ def get_subreddit_client(args):
 def get_discord_bot(args):
     """ Returns a discord.py bot which we will use to listen to commands """
     help_cmd = commands.DefaultHelpCommand(no_category="Commands", width=120)
-    description = """I get copypasta posts from Reddit\n
-    Prefix Aliases are: \"pastabot!\", \"pasta!\", \"pb!\", \"p!\" \n
+    description = """Hello I am PastaBot, I get copypasta posts from Reddit
+    so you don't have to!
+
+    Prefix from longest to shortest: \"pastabot!\", \"pasta!\", \"pb!\", \"p!\"
+    or you can mention @PastaBot with a command
+
     Examples:
-    +-----------------------------------------------------------+
-    | Command       | Description                               |
-    +---------------+-------------------------------------------+
-    | p!rand        | Get random submission from 100 hot pastas |
-    | p!rand top 10 | Get random submission from 10 top pastas  |
-    | p!get new 10  | Get 10th submission from new              |
-    | p!list top 10 | List 10 submissions from top              |
-    +---------------+-------------------------------------------+
+    ---------
+    p!rand
+    Get random submission (defaults to 100 hot pastas)
+
+    p!rand top 10
+    Get random submission from 10 top pastas
+
+    p!get new 10
+    Get 10th submission from new
+
+    p!list top 10
+    List 10 submissions from top
     """
     pastabot = commands.Bot(
-        command_prefix=commands.when_mentioned_or("pasta!", "pastabot!", "pb!",
-                                                  "p!"),
+        command_prefix=commands.when_mentioned_or("pasta!", "pastabot!", "pb!", "p!"),
         description=description,
         help_command=help_cmd,
     )
+
     return pastabot
 
 
 def create_bot_callbacks():
     """ This function creates async callback functions for bot events like commands """
+
     @bot.event
     async def on_ready():
         logger.logging.info("PastaBot is online")
-        await bot.change_presence(status=discord.Status.online,
-                                  activity=discord.Game("pasta!help"))
+        await bot.change_presence(
+            status=discord.Status.online, activity=discord.Game("pasta!help")
+        )
 
     @bot.command(
         help="""Lists a number posts from a sort type.
@@ -127,8 +135,7 @@ def create_bot_callbacks():
     async def list(ctx, sort_type: str, post_limit: int):
         logger.log_discord_command("list", ctx.author)
         posts = reddit_utils.get_posts(sub, sort_type, post_limit)
-        await discord_utils.list_posts_as_msg(ctx, posts, post_limit,
-                                              sort_type)
+        await discord_utils.list_posts_as_msg(ctx, posts, post_limit, sort_type)
 
     @bot.command(
         help="""Get a specific post from a sorting type.
