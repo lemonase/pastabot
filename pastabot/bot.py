@@ -182,14 +182,14 @@ def main():
 
     # output logging header
     logger.set_basic_logger(filename=logger.get_log_filename(args))
-    logger.log_startup(True)
+    logger.log_action("started")
 
     # define async callback functions and run the bot
     create_bot_callbacks()
     bot.run(args.discord_bot_token)
 
     # stop logging
-    logger.log_startup(False)
+    logger.log_action("shutdown")
 
 
 if __name__ == "__main__":
