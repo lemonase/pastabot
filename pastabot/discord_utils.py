@@ -4,7 +4,7 @@ async def send_post_as_msg(ctx, posts, post_limit):
     """
     for i, post in enumerate(posts):
         if i == post_limit - 1:
-            await ctx.send(post.title + "\n")
+            await ctx.send("🍝 " + post.title + " 🍝\n" + "-" * len(post.title))
             if post.selftext:
                 if len(post.selftext) < 2000:
                     await ctx.send(post.selftext)

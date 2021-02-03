@@ -90,7 +90,7 @@ def get_discord_bot(args):
     description = """Hello I am PastaBot, I get copypasta posts from Reddit
     so you don't have to!
 
-    Prefix from longest to shortest: \"pastabot!\", \"pasta!\", \"pb!\", \"p!\"
+    Prefixs: \"pastabot!\" | \"pasta!\" | \"pb!\" | \"p!\"
     or you can mention @PastaBot with a command
 
     Examples:
@@ -121,7 +121,7 @@ def create_bot_callbacks():
 
     @bot.event
     async def on_ready():
-        logger.logging.info("PastaBot is online")
+        logger.logging.info("* PastaBot is online *")
         await bot.change_presence(
             status=discord.Status.online, activity=discord.Game("pasta!help")
         )
@@ -156,7 +156,7 @@ def create_bot_callbacks():
         aliases=["r", "random"],
     )
     async def rand(ctx, sort_type: str = "random", post_limit: int = 50):
-        logger.log_discord_command(sort_type, ctx.author)
+        logger.log_discord_command("rand", ctx.author)
         post_limit = random.randint(1, post_limit)
         posts = reddit_utils.get_posts(sub, sort_type, post_limit)
         await discord_utils.send_post_as_msg(ctx, posts, post_limit)
@@ -175,14 +175,14 @@ def main():
 
     # output logging header
     logger.set_basic_logger()
-    logger.log_begin()
+    logger.log_startup(True)
 
     # define async callback functions and run the bot
     create_bot_callbacks()
     bot.run(args.discord_bot_token)
 
     # stop logging
-    logger.log_end()
+    logger.log_startup(False)
 
 
 if __name__ == "__main__":
