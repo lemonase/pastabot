@@ -6,15 +6,18 @@ It fetches submissions from [/r/copypasta](https://reddit.com/r/copypasta) and w
 
 ## Commands (so far)
 
-Command Prefix(es) = `pasta!` | `pastabot!` | `pb!` | `p!`
+Command Prefixes = `pastabot!` | `pasta!` | `pb!` | `p!`
 
 Commands:
 
-- `pasta!get [hot|top|new] <count>` Return a singular copypasta that is <count> posts from the top.
+- `pasta!get [hot|top|new] <count>`
+  Return a singular copypasta that is <count> posts from the top.
   - aliases: `g`, `ge`
-- `pasta!list [hot|top|new] <count>` Lists the titles of the top <count> copypasta posts.
+- `pasta!list [hot|top|new] <count>`
+  Lists the titles of the top <count> copypasta posts.
   - aliases: `l`, `li`
-- `pasta!rand [hot|top|new] [<count>]` Get a random copypasta where <count> is the highest number. Default is 50
+- `pasta!rand [hot|top|new] [<count>]`
+  Get a random copypasta where <count> is the highest number. Default is 100
   - aliases: `r`, `random`
 
 ## Installation
@@ -26,14 +29,14 @@ The script currently needs some API credentials from both Discord and Reddit.
 1. Go to the Discord API portal:
    https://discord.com/developers/applications
 
-2. Create a discord application with any name
+2. Click "New Application" button on top right, name it anything
 
-3. Go to the "Bot" tab on the left
+3. In you newly created application, go to the "Bot" tab on the left
 
-4. Under "Build A Bot" there will be a token with a Copy button.
-Copy that token
+4. Under "Build A Bot" there will be a token label with a Copy button.
+   Copy that token
 
-5. Set environment variable `DISCORD_BOT_TOKEN=<YOUR_BOT_TOKEN>`
+5. Set your environment variable `DISCORD_BOT_TOKEN=<YOUR_BOT_TOKEN>`
 
 ### Reddit ID and Secret
 
@@ -42,23 +45,25 @@ Copy that token
 
 2. Create a "script" type key and name it whatever
 
-3. Copy your Client ID (not labelled, but found under the name of the script)
+3. Copy your Client ID (not labelled, but found in bold under the name of the script)
    and the Client Secret (is labelled).
 
-4. Set environment variable `REDDIT_ID=<client id>` and the Client Secret as `REDDIT_SECRET=<client secret>`
+4. Set environment variables `REDDIT_ID=<YOUR_CLIENT_ID>`
+   and the Client Secret as `REDDIT_SECRET=<YOUR_CLIENT_SECRET>`
 
 ### Storing credentials using dotenv
 
-Instead of setting environment variables, you can also put credentials in
-a `.env` file in the project root and they will also be picked up.
+Environment variables can also be stored in a `.env` in the directory where the
+project is run. In the future, I may decide to use a configuration file instead.
 
 ### Running
 
-Below, I'm assuming the correct API credentials are in corresponding environment variables.
+Below, I'm assuming all API credentials are in their corresponding
+environment variables.
 
 ```sh
-git clone https://github.com/lemonase/copybotsa.git
-cd copybotsa
+git clone https://github.com/lemonase/pastabot.git
+cd pastabot
 pip install -r requirements.txt
 python3 pastabot/bot.py
 ```
