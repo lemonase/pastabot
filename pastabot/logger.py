@@ -3,29 +3,45 @@
 This module has some common log messages for the context of the bot.
 """
 import logging
+import os
+import pathlib
 import sys
 
 import bot
 
 
-# TODO: Add configuration to control log
-# and put logs somewhere that makes sense
-def set_basic_logger(log_name: str = "pastabot.log",
+def get_log_filename(args):
+    log_file = ""
+    if not args.log_path:
+        import tempfile
+        log_file = pathlib.Path(
+            tempfile.gettempdir()) / "pastabot" / "pastabot.log"
+    else:
+        log_file = args.log_path / "pastabot.log"
+
+    log_file = log_file.expanduser().resolve()
+    if not log_file.parent.exists():
+        log_file.parent.mkdir(parents=True, exist_ok=False)
+    log_file.touch(exist_ok=True)
+
+    return str(log_file)
+
+
+def set_basic_logger(filename: str = "pastabot.log",
                      log_file: bool = True,
                      log_stdout: bool = True):
     """ Configures the python logger with basic parameters like name, file, and stdout"""
     log_handlers = []
     if log_file:
-        log_handlers.append(logging.FileHandler(log_name))
+        log_handlers.append(logging.FileHandler(filename))
     if log_stdout:
         log_handlers.append(logging.StreamHandler(sys.stdout))
+
     logging.basicConfig(
         format="%(asctime)s:%(name)s:%(levelname)s - %(message)s",
         level=logging.INFO,
         encoding="utf-8",
-        handlers=[logging.FileHandler(log_name),
-                  logging.StreamHandler()],
-    )
+        handlers=log_handlers)
 
 
 def get_advanced_logger():

@@ -7,6 +7,7 @@ the clients, setting up the logger and running the bot.
 import argparse
 import os
 import random
+import pathlib
 import sys
 
 import praw
@@ -27,33 +28,33 @@ def get_args():
     """ Returns arguments passed in from the command line """
     load_dotenv()
 
-    cmd_parser = argparse.ArgumentParser(description="pasta_bot options")
+    cmd_parser = argparse.ArgumentParser(
+        description="PastaBot ver {} options".format(__version__))
+
     cmd_parser.add_argument(
         "--discord-bot-token",
         type=str,
         default=os.environ.get("DISCORD_BOT_TOKEN"),
     )
-
     cmd_parser.add_argument(
         "--reddit-id",
         type=str,
         default=os.environ.get("REDDIT_ID"),
     )
-
     cmd_parser.add_argument(
         "--reddit-secret",
         type=str,
         default=os.environ.get("REDDIT_SECRET"),
     )
-
     cmd_parser.add_argument("--reddit-ua",
                             type=str,
                             default="PastaBot " + __version__)
     cmd_parser.add_argument("--subreddits", type=str, default=DEFAULT_SUBS)
+    cmd_parser.add_argument("--log-path", type=pathlib.Path)
+    cmd_parser.add_argument("--version", action="store_true")
 
     args = cmd_parser.parse_args()
 
-    # TODO: Read from a configuration file where options can be specified
     if not args.reddit_id:
         print(
             "Error: please supply REDDIT_ID as environment variable or flag",
@@ -72,6 +73,10 @@ def get_args():
             file=sys.stderr,
         )
         sys.exit(cmd_parser.print_usage())
+
+    if args.version:
+        print("PastaBot ver {}".format(__version__))
+        sys.exit(0)
 
     return args
 
@@ -176,7 +181,7 @@ def main():
     bot = get_discord_bot(args)
 
     # output logging header
-    logger.set_basic_logger()
+    logger.set_basic_logger(filename=logger.get_log_filename(args))
     logger.log_startup(True)
 
     # define async callback functions and run the bot
