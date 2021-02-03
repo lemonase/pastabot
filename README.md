@@ -60,7 +60,7 @@ Below, I'm assuming the correct API credentials are in corresponding environment
 git clone https://github.com/lemonase/copybotsa.git
 cd copybotsa
 pip install -r requirements.txt
-python3 copybotsa.py
+python3 pastabot/bot.py
 ```
 
 ## Libraries used
