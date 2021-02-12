@@ -10,18 +10,16 @@ import random
 import pathlib
 import sys
 
-import praw
+import asyncio
+import asyncpraw
 
 import discord
-import discord_utils
-import emoji_utils
 import logger
-import reddit_utils
 from discord.ext import commands
 from dotenv import load_dotenv
 
 __version__ = "0.0.2"
-DEFAULT_SUBS = "copypasta+emojipasta"
+DEFAULT_SUBS = "copypasta"
 
 
 def get_args():
@@ -29,7 +27,8 @@ def get_args():
     load_dotenv()
 
     cmd_parser = argparse.ArgumentParser(
-        description="PastaBot ver {} options".format(__version__))
+        description="PastaBot ver {} options".format(__version__)
+    )
 
     cmd_parser.add_argument(
         "--discord-bot-token",
@@ -46,9 +45,7 @@ def get_args():
         type=str,
         default=os.environ.get("REDDIT_SECRET"),
     )
-    cmd_parser.add_argument("--reddit-ua",
-                            type=str,
-                            default="PastaBot " + __version__)
+    cmd_parser.add_argument("--reddit-ua", type=str, default="PastaBot " + __version__)
     cmd_parser.add_argument("--subreddits", type=str, default=DEFAULT_SUBS)
     cmd_parser.add_argument("--log-path", type=pathlib.Path)
     cmd_parser.add_argument("--version", action="store_true")
@@ -81,14 +78,18 @@ def get_args():
     return args
 
 
-def get_subreddit_client(args):
-    """ Returns a praw object that represents one (or multiple) subreddits """
-    reddit_client = praw.Reddit(
+def get_reddit_client(args):
+    client = asyncpraw.Reddit(
         client_id=args.reddit_id,
         client_secret=args.reddit_secret,
         user_agent=args.reddit_ua,
     )
-    return reddit_client.subreddit(args.subreddits)
+    return client
+
+
+def get_subreddit_client(client, args):
+    """ Returns a async praw object that represents one (or multiple) subreddits """
+    return client.subreddit(args.subreddits, fetch=True)
 
 
 def get_discord_bot(args):
@@ -115,8 +116,7 @@ def get_discord_bot(args):
     List 10 submissions from top
     """
     pastabot = commands.Bot(
-        command_prefix=commands.when_mentioned_or("pasta!", "pastabot!", "pb!",
-                                                  "p!"),
+        command_prefix=commands.when_mentioned_or("pasta!", "pastabot!", "pb!", "p!"),
         description=description,
         help_command=help_cmd,
     )
@@ -126,11 +126,13 @@ def get_discord_bot(args):
 
 def create_bot_callbacks():
     """ This function creates async callback functions for bot events like commands """
+
     @bot.event
     async def on_ready():
         logger.logging.info("* PastaBot is online *")
-        await bot.change_presence(status=discord.Status.online,
-                                  activity=discord.Game("pasta!help"))
+        await bot.change_presence(
+            status=discord.Status.online, activity=discord.Game("pasta!help")
+        )
 
     @bot.command(
         help="""Lists a number posts from a sort type.
@@ -140,9 +142,8 @@ def create_bot_callbacks():
     )
     async def list(ctx, sort_type: str, post_limit: int):
         logger.log_discord_command("list", ctx.author)
-        posts = reddit_utils.get_posts(sub, sort_type, post_limit)
-        await discord_utils.list_posts_as_msg(ctx, posts, post_limit,
-                                              sort_type)
+        posts = get_reddit_posts(subreddit, sort_type, post_limit)
+        await discord_utils.list_posts_as_msg(ctx, posts, post_limit, sort_type)
 
     @bot.command(
         help="""Get a specific post from a sorting type.
@@ -152,8 +153,8 @@ def create_bot_callbacks():
     )
     async def get(ctx, sort_type: str, post_limit: int):
         logger.log_discord_command("get", ctx.author)
-        posts = reddit_utils.get_posts(sub, sort_type, post_limit)
-        await discord_utils.send_post_as_msg(ctx, posts, post_limit)
+        posts = get_reddit_posts(subreddit, sort_type, post_limit)
+        await send_post_msg(ctx, posts, post_limit)
 
     @bot.command(
         help="""Picks a random post (out of 100).
@@ -165,32 +166,95 @@ def create_bot_callbacks():
     async def rand(ctx, sort_type: str = "random", post_limit: int = 50):
         logger.log_discord_command("rand", ctx.author)
         post_limit = random.randint(1, post_limit)
-        posts = reddit_utils.get_posts(sub, sort_type, post_limit)
-        await discord_utils.send_post_as_msg(ctx, posts, post_limit)
+        posts = await get_reddit_posts(subreddit, sort_type, post_limit)
+        await send_post_msg(ctx, posts, post_limit)
 
 
-def main():
-    """ Main entrypoint for the bot """
-    # bot must be global for function decorators
+# Discord Utils
+
+
+async def send_post_msg(ctx, posts, post_limit):
+    """Takes discord context, reddit posts and number of posts
+    and uses the discord discord context to send the post as a discord message
+    """
+    for i, post in enumerate(posts):
+        if i == post_limit - 1:
+            await ctx.send("🍝 " + post.title + "\n" + "-" * 10)
+
+            if post.selftext:
+                if len(post.selftext) < 2000:
+                    await ctx.send(post.selftext)
+                else:
+                    for m in range(0, len(post.selftext), 1500):
+                        await ctx.send(post.selftext[m : m + 1500])
+            await ctx.send("sauce: " + post.url)
+
+
+async def list_posts_as_msg(ctx, posts, post_limit, sort_type):
+    """Takes discord context, reddit posts, number of posts, and the sort_type
+    and uses the discord context to send the titles as a message
+    """
+    msg_output = ""
+    for i, post in enumerate(posts):
+        msg_output += "\U00002B06 {}\n".format(post.score)
+        msg_output += "{0} post: {1}: {2}\n\n".format(sort_type, str(i + i), post.title)
+
+    await ctx.send(msg_output)
+
+
+# Reddit Utils
+
+
+async def get_reddit_posts(target_sub, sort_type: str, num: int = 100):
+    """Takes a praw subreddit model, sort type, and a limit for num of posts retrieved
+    The returned object is a generator, so posts are not really "fetched" until iterated on
+    """
+    posts = []
+    if sort_type == "random":
+        sort_type = random.choice(["hot", "top", "new"])
+
+    if sort_type == "top":
+        posts = target_sub.top(limit=num)
+    if sort_type == "new":
+        posts = target_sub.new(limit=num)
+    else:
+        posts = target_sub.hot(limit=num)
+
+    logger.logging.info("Getting %s posts sorted by: %s", num, sort_type)
+
+    return posts
+
+
+async def init_reddit(args):
+    global subreddit
+    reddit = get_reddit_client(args)
+    subreddit = await get_subreddit_client(reddit, args)
+    await reddit.close()
+
+
+def init_discord(args):
     global bot
-    global sub
-
-    # get arguments and create clients
-    args = get_args()
-    sub = get_subreddit_client(args)
     bot = get_discord_bot(args)
-
-    # output logging header
-    logger.set_basic_logger(filename=logger.get_log_filename(args))
-    logger.log_action("started")
-
-    # define async callback functions and run the bot
     create_bot_callbacks()
     bot.run(args.discord_bot_token)
 
+
+async def main():
+    """ Main entrypoint for the bot """
+    # get arguments
+    args = get_args()
+    # start logging
+    logger.set_basic_logger(filename=logger.get_log_filename(args))
+    logger.log_action("started")
+    # init clients
+    await init_reddit(args)
+    init_discord(args)
     # stop logging
     logger.log_action("shutdown")
 
 
 if __name__ == "__main__":
-    main()
+    # asyncio.run(main())
+
+    loop = asyncio.new_event_loop()
+    loop.run_until_complete(main())
