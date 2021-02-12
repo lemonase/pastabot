@@ -77,3 +77,4 @@ python3 src/bot.py
 
 - Store logs somewhere other than the project root
 - Read settings like user_agent, subreddits, default_post_limit, credentials, etc., from a configuration file
+- Upgrade to AsyncPRAW
