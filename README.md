@@ -65,7 +65,7 @@ environment variables.
 git clone https://github.com/lemonase/pastabot.git
 cd pastabot
 pip install -r requirements.txt
-python3 pastabot/bot.py
+python3 src/bot.py
 ```
 
 ## Libraries used
