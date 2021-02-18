@@ -20,7 +20,7 @@ import reddit_utils
 from discord.ext import commands
 from dotenv import load_dotenv
 
-__version__ = "0.0.2"
+__version__ = "0.0.3"
 DEFAULT_SUBS = "copypasta+emojipasta"
 
 
@@ -87,6 +87,7 @@ def get_subreddit_client(args):
         client_id=args.reddit_id,
         client_secret=args.reddit_secret,
         user_agent=args.reddit_ua,
+        check_for_async=False
     )
     return reddit_client.subreddit(args.subreddits)
 

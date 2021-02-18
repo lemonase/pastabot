@@ -1,10 +1,14 @@
+import emoji_utils
+
+
 async def send_post_as_msg(ctx, posts, post_limit):
     """Takes discord context, reddit posts and number of posts
     and uses the discord discord context to send the post as a discord message
     """
     for i, post in enumerate(posts):
         if i == post_limit - 1:
-            await ctx.send("🍝 " + post.title + "\n" + "-" * 10)
+            title = emoji_utils.pastify_string(post.title)
+            await ctx.send(title)
             if post.selftext:
                 if len(post.selftext) < 2000:
                     await ctx.send(post.selftext)
@@ -20,8 +24,6 @@ async def list_posts_as_msg(ctx, posts, post_limit, sort_type):
     """
     msg_output = ""
     for i, post in enumerate(posts):
-        msg_output += "\U00002B06 {}\n".format(post.score)
-        msg_output += "{0} post: {1}: {2}\n\n".format(sort_type, str(i + i),
-                                                      post.title)
+        msg_output += "{0} post: {1}: {2}\n".format(sort_type, str(i + 1), post.title)
 
     await ctx.send(msg_output)

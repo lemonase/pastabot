@@ -10,3 +10,8 @@ def generate_emoji(num_emojis: int) -> str:
     for _ in range(num_emojis):
         output += random.choice(emojis) + "🍝"
     return output
+
+
+def pastify_string(input_str):
+    return "🍝 " + input_str + " 🍝"
+
