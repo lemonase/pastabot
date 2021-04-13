@@ -19,7 +19,7 @@ Commands:
   Lists the titles of the top <count> copypasta posts.
   - aliases: `l`, `li`
 - `pasta!rand [hot|top|new] [<count>]`
-  Get a random copypasta where <count> is the max. Default is 100.
+  Get a random copypasta where <count> is the max. (Default is 50)
   - aliases: `r`, `random`
 
 ## Getting API keys
