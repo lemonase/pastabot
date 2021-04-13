@@ -1,9 +1,9 @@
-# PastaBot
+# PastaBot 🍝
 
-Made with ♥ for all copypasta lovers.
+Made with ♥ for all the copypasta lovers.
 
 This bot fetches submissions from [/r/copypasta](https://reddit.com/r/copypasta)
-and [/r/emojipasta](https://reddit.com/r/copypasta) and sends them as a message
+and [/r/emojipasta](https://reddit.com/r/emojipasta) and sends them as a message
 in Discord.
 
 ## Commands
@@ -19,10 +19,10 @@ Commands:
   Lists the titles of the top <count> copypasta posts.
   - aliases: `l`, `li`
 - `pasta!rand [hot|top|new] [<count>]`
-  Get a random copypasta where <count> is the highest number. Default is 100
+  Get a random copypasta where <count> is the max. Default is 100.
   - aliases: `r`, `random`
 
-## Installation
+## Getting API keys
 
 The script currently needs some API credentials from both Discord and Reddit.
 
@@ -58,7 +58,7 @@ The script currently needs some API credentials from both Discord and Reddit.
 Environment variables can also be stored in a `.env` in the directory where the
 project is run. In the future, I may decide to use a configuration file instead.
 
-### Running
+## Running the bot
 
 Below, I'm assuming all API credentials are in their corresponding
 environment variables.
