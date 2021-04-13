@@ -11,7 +11,7 @@ import logger
 
 def get_posts(
     sub: praw.models.reddit.subreddit.Subreddit, sort_type: str, num: int = 100
-):
+) -> praw.models.listing.generator.ListingGenerator:
     """Takes a praw subreddit model, sort type, and a limit for num of posts retrieved
     The returned object is a generator, so posts are not really "fetched" until iterated on
     """

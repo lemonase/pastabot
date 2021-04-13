@@ -20,11 +20,11 @@ import reddit_utils
 from discord.ext import commands
 from dotenv import load_dotenv
 
-__version__ = "0.0.3"
+__version__ = "0.0.4"
 DEFAULT_SUBS = "copypasta+emojipasta"
 
 
-def get_args():
+def get_args() -> argparse.Namespace:
     """ Returns arguments passed in from the command line """
     load_dotenv()
 
@@ -47,7 +47,8 @@ def get_args():
         type=str,
         default=os.environ.get("REDDIT_SECRET"),
     )
-    cmd_parser.add_argument("--reddit-ua", type=str, default="PastaBot " + __version__)
+    cmd_parser.add_argument("--reddit-ua", type=str,
+                            default="PastaBot " + __version__)
     cmd_parser.add_argument("--subreddits", type=str, default=DEFAULT_SUBS)
     cmd_parser.add_argument("--log-path", type=pathlib.Path)
     cmd_parser.add_argument("--version", action="store_true")
@@ -80,7 +81,7 @@ def get_args():
     return args
 
 
-def get_subreddit_client(args):
+def get_subreddit_client(args: argparse.Namespace) -> praw.models.reddit.subreddit.Subreddit:
     """ Returns a praw object that represents one (or multiple) subreddits """
     reddit_client = praw.Reddit(
         client_id=args.reddit_id,
@@ -91,13 +92,13 @@ def get_subreddit_client(args):
     return reddit_client.subreddit(args.subreddits)
 
 
-def get_discord_bot(args):
+def get_discord_bot() -> discord.ext.commands.bot.Bot:
     """ Returns a discord.py bot which we will use to listen to commands """
     help_cmd = commands.DefaultHelpCommand(no_category="Commands", width=120)
     description = """Hello I am PastaBot, I get copypasta posts from Reddit
     so you don't have to!
 
-    Prefixs: \"pastabot!\" | \"pasta!\" | \"pb!\" | \"p!\"
+    Prefixes: \"pastabot!\" | \"pasta!\" | \"pb!\" | \"p!\"
     or you can mention @PastaBot with a command
 
     Examples:
@@ -115,7 +116,8 @@ def get_discord_bot(args):
     List 10 submissions from top
     """
     pastabot = commands.Bot(
-        command_prefix=commands.when_mentioned_or("pasta!", "pastabot!", "pb!", "p!"),
+        command_prefix=commands.when_mentioned_or(
+            "pasta!", "pastabot!", "pb!", "p!"),
         description=description,
         help_command=help_cmd,
     )
@@ -123,7 +125,7 @@ def get_discord_bot(args):
     return pastabot
 
 
-def create_bot_callbacks():
+def create_bot_callbacks() -> None:
     """ This function creates async callback functions for bot events like commands """
 
     @bot.event
@@ -169,7 +171,7 @@ def create_bot_callbacks():
         await discord_utils.send_post_as_msg(ctx, posts, post_limit)
 
 
-def main():
+def main() -> None:
     """ Main entrypoint for the bot """
     # bot must be global for function decorators
     global bot
@@ -177,19 +179,19 @@ def main():
 
     # get arguments and create clients
     args = get_args()
+    bot = get_discord_bot()
     sub = get_subreddit_client(args)
-    bot = get_discord_bot(args)
 
     # output logging header
     logger.set_basic_logger(filename=logger.get_log_filename(args))
-    logger.log_action("started")
+    logger.log_action("bot started")
 
     # define async callback functions and run the bot
     create_bot_callbacks()
     bot.run(args.discord_bot_token)
 
     # stop logging
-    logger.log_action("shutdown")
+    logger.log_action("bot shutdown")
 
 
 if __name__ == "__main__":
