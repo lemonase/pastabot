@@ -29,7 +29,8 @@ def get_args():
     load_dotenv()
 
     cmd_parser = argparse.ArgumentParser(
-        description="PastaBot ver {} options".format(__version__))
+        description="PastaBot ver {} options".format(__version__)
+    )
 
     cmd_parser.add_argument(
         "--discord-bot-token",
@@ -46,9 +47,7 @@ def get_args():
         type=str,
         default=os.environ.get("REDDIT_SECRET"),
     )
-    cmd_parser.add_argument("--reddit-ua",
-                            type=str,
-                            default="PastaBot " + __version__)
+    cmd_parser.add_argument("--reddit-ua", type=str, default="PastaBot " + __version__)
     cmd_parser.add_argument("--subreddits", type=str, default=DEFAULT_SUBS)
     cmd_parser.add_argument("--log-path", type=pathlib.Path)
     cmd_parser.add_argument("--version", action="store_true")
@@ -87,7 +86,7 @@ def get_subreddit_client(args):
         client_id=args.reddit_id,
         client_secret=args.reddit_secret,
         user_agent=args.reddit_ua,
-        check_for_async=False
+        check_for_async=False,
     )
     return reddit_client.subreddit(args.subreddits)
 
@@ -116,8 +115,7 @@ def get_discord_bot(args):
     List 10 submissions from top
     """
     pastabot = commands.Bot(
-        command_prefix=commands.when_mentioned_or("pasta!", "pastabot!", "pb!",
-                                                  "p!"),
+        command_prefix=commands.when_mentioned_or("pasta!", "pastabot!", "pb!", "p!"),
         description=description,
         help_command=help_cmd,
     )
@@ -127,11 +125,13 @@ def get_discord_bot(args):
 
 def create_bot_callbacks():
     """ This function creates async callback functions for bot events like commands """
+
     @bot.event
     async def on_ready():
         logger.logging.info("* PastaBot is online *")
-        await bot.change_presence(status=discord.Status.online,
-                                  activity=discord.Game("pasta!help"))
+        await bot.change_presence(
+            status=discord.Status.online, activity=discord.Game("pasta!help")
+        )
 
     @bot.command(
         help="""Lists a number posts from a sort type.
@@ -142,8 +142,7 @@ def create_bot_callbacks():
     async def list(ctx, sort_type: str, post_limit: int):
         logger.log_discord_command("list", ctx.author)
         posts = reddit_utils.get_posts(sub, sort_type, post_limit)
-        await discord_utils.list_posts_as_msg(ctx, posts, post_limit,
-                                              sort_type)
+        await discord_utils.list_posts_as_msg(ctx, posts, post_limit, sort_type)
 
     @bot.command(
         help="""Get a specific post from a sorting type.

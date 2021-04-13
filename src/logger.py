@@ -14,8 +14,8 @@ def get_log_filename(args):
     log_file = ""
     if not args.log_path:
         import tempfile
-        log_file = pathlib.Path(
-            tempfile.gettempdir()) / "pastabot" / "pastabot.log"
+
+        log_file = pathlib.Path(tempfile.gettempdir()) / "pastabot" / "pastabot.log"
     else:
         log_file = args.log_path / "pastabot.log"
 
@@ -27,9 +27,9 @@ def get_log_filename(args):
     return str(log_file)
 
 
-def set_basic_logger(filename: str = "pastabot.log",
-                     log_file: bool = True,
-                     log_stdout: bool = True):
+def set_basic_logger(
+    filename: str = "pastabot.log", log_file: bool = True, log_stdout: bool = True
+):
     """ Configures the python logger with basic parameters like name, file, and stdout"""
     log_handlers = []
     if log_file:
@@ -41,7 +41,8 @@ def set_basic_logger(filename: str = "pastabot.log",
         format="%(asctime)s:%(name)s:%(levelname)s - %(message)s",
         level=logging.INFO,
         encoding="utf-8",
-        handlers=log_handlers)
+        handlers=log_handlers,
+    )
 
 
 def get_advanced_logger():
@@ -50,12 +51,12 @@ def get_advanced_logger():
     adv_logger = logging.getLogger(__name__)
     adv_logger.setLevel(logging.INFO)
 
-    file_handler = logging.FileHandler(filename="pastabot.log",
-                                       encoding="utf-8")
+    file_handler = logging.FileHandler(filename="pastabot.log", encoding="utf-8")
     stdout_handler = logging.StreamHandler(sys.stdout)
 
     file_handler.setFormatter(
-        logging.Formatter("%(asctime)s:%(levelname)s:%(name)s: %(message)s"))
+        logging.Formatter("%(asctime)s:%(levelname)s:%(name)s: %(message)s")
+    )
 
     adv_logger.addHandler(file_handler)
     adv_logger.addHandler(stdout_handler)

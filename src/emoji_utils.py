@@ -3,9 +3,7 @@ import random
 
 def generate_emoji(num_emojis: int) -> str:
     """ Generates a psuedorandom list of emojis with pasta sprinkled in """
-    emojis = [
-        "🙄", "😙", "😐", "🤤", "😤", "😲", "😬", "😭", "🥵", "🥺", "🤠", "🤫", "😳", "😢"
-    ]
+    emojis = ["🙄", "😙", "😐", "🤤", "😤", "😲", "😬", "😭", "🥵", "🥺", "🤠", "🤫", "😳", "😢"]
     output: str = ""
     for _ in range(num_emojis):
         output += random.choice(emojis) + "🍝"
@@ -14,4 +12,3 @@ def generate_emoji(num_emojis: int) -> str:
 
 def pastify_string(input_str):
     return "🍝 " + input_str + " 🍝"
-
