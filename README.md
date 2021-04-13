@@ -1,10 +1,12 @@
 # PastaBot
 
-Made with ♥ for all you copypasta lovers.
+Made with ♥ for all copypasta lovers.
 
-It fetches submissions from [/r/copypasta](https://reddit.com/r/copypasta) and writes them as a message in Discord.
+This bot fetches submissions from [/r/copypasta](https://reddit.com/r/copypasta)
+and [/r/emojipasta](https://reddit.com/r/copypasta) and sends them as a message
+in Discord.
 
-## Commands (so far)
+## Commands
 
 Command Prefixes = `pastabot!` | `pasta!` | `pb!` | `p!`
 
@@ -31,7 +33,7 @@ The script currently needs some API credentials from both Discord and Reddit.
 
 2. Click "New Application" button on top right, name it anything
 
-3. In you newly created application, go to the "Bot" tab on the left
+3. In the newly created application, go to the "Bot" tab on the menu on the left
 
 4. Under "Build A Bot" there will be a token label with a Copy button.
    Copy that token
@@ -75,6 +77,4 @@ python3 src/bot.py
 
 ## TODOs
 
-- Store logs somewhere other than the project root
-- Read settings like user_agent, subreddits, default_post_limit, credentials, etc., from a configuration file
 - Upgrade to AsyncPRAW
