@@ -17,8 +17,7 @@ def get_log_filename(args: argparse.Namespace) -> str:
     if not args.log_path:
         import tempfile
 
-        log_file = pathlib.Path(tempfile.gettempdir()) / \
-            "pastabot" / "pastabot.log"
+        log_file = pathlib.Path(tempfile.gettempdir()) / "pastabot" / "pastabot.log"
     else:
         log_file = args.log_path / "pastabot.log"
 
@@ -54,8 +53,7 @@ def get_advanced_logger() -> logging.Logger:
     adv_logger = logging.getLogger(__name__)
     adv_logger.setLevel(logging.INFO)
 
-    file_handler = logging.FileHandler(
-        filename="pastabot.log", encoding="utf-8")
+    file_handler = logging.FileHandler(filename="pastabot.log", encoding="utf-8")
     stdout_handler = logging.StreamHandler(sys.stdout)
 
     file_handler.setFormatter(

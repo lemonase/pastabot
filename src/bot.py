@@ -6,19 +6,18 @@ the clients, setting up the logger and running the bot.
 """
 import argparse
 import os
-import random
 import pathlib
+import random
 import sys
 
-import praw
-
 import discord
-import discord_utils
-import emoji_utils
-import logger
-import reddit_utils
+import praw
 from discord.ext import commands
 from dotenv import load_dotenv
+
+import discord_utils
+import logger
+import reddit_utils
 
 __version__ = "0.0.4"
 DEFAULT_SUBS = "copypasta+emojipasta"
@@ -47,8 +46,7 @@ def get_args() -> argparse.Namespace:
         type=str,
         default=os.environ.get("REDDIT_SECRET"),
     )
-    cmd_parser.add_argument("--reddit-ua", type=str,
-                            default="PastaBot " + __version__)
+    cmd_parser.add_argument("--reddit-ua", type=str, default="PastaBot " + __version__)
     cmd_parser.add_argument("--subreddits", type=str, default=DEFAULT_SUBS)
     cmd_parser.add_argument("--log-path", type=pathlib.Path)
     cmd_parser.add_argument("--version", action="store_true")
@@ -81,7 +79,9 @@ def get_args() -> argparse.Namespace:
     return args
 
 
-def get_subreddit_client(args: argparse.Namespace) -> praw.models.reddit.subreddit.Subreddit:
+def get_reddit_client(
+    args: argparse.Namespace,
+) -> praw.models.reddit:
     """ Returns a praw object that represents one (or multiple) subreddits """
     reddit_client = praw.Reddit(
         client_id=args.reddit_id,
@@ -89,7 +89,7 @@ def get_subreddit_client(args: argparse.Namespace) -> praw.models.reddit.subredd
         user_agent=args.reddit_ua,
         check_for_async=False,
     )
-    return reddit_client.subreddit(args.subreddits)
+    return reddit_client
 
 
 def get_discord_bot() -> discord.ext.commands.bot.Bot:
@@ -116,8 +116,7 @@ def get_discord_bot() -> discord.ext.commands.bot.Bot:
     List 10 submissions from top
     """
     pastabot = commands.Bot(
-        command_prefix=commands.when_mentioned_or(
-            "pasta!", "pastabot!", "pb!", "p!"),
+        command_prefix=commands.when_mentioned_or("pasta!", "pastabot!", "pb!", "p!"),
         description=description,
         help_command=help_cmd,
     )
@@ -143,7 +142,7 @@ def create_bot_callbacks() -> None:
     )
     async def list(ctx, sort_type: str, post_limit: int):
         logger.log_discord_command("list", ctx.author)
-        posts = reddit_utils.get_posts(sub, sort_type, post_limit)
+        posts = reddit_utils.get_posts(pasta_subs, sort_type, post_limit)
         await discord_utils.list_posts_as_msg(ctx, posts, post_limit, sort_type)
 
     @bot.command(
@@ -154,7 +153,7 @@ def create_bot_callbacks() -> None:
     )
     async def get(ctx, sort_type: str, post_limit: int):
         logger.log_discord_command("get", ctx.author)
-        posts = reddit_utils.get_posts(sub, sort_type, post_limit)
+        posts = reddit_utils.get_posts(pasta_subs, sort_type, post_limit)
         await discord_utils.send_post_as_msg(ctx, posts, post_limit)
 
     @bot.command(
@@ -167,20 +166,33 @@ def create_bot_callbacks() -> None:
     async def rand(ctx, sort_type: str = "random", post_limit: int = 50):
         logger.log_discord_command("rand", ctx.author)
         post_limit = random.randint(1, post_limit)
-        posts = reddit_utils.get_posts(sub, sort_type, post_limit)
+        posts = reddit_utils.get_posts(pasta_subs, sort_type, post_limit)
         await discord_utils.send_post_as_msg(ctx, posts, post_limit)
+
+    @bot.command(
+        help="""Shows a (copypasta) post from reddit.
+        Arg 1: Post URL (ex: https://www.reddit.com/r/copypasta/comments/mw7yk4/wholesome/)
+        """,
+        aliases=["s", "url"],
+    )
+    async def show(ctx, url: str):
+        logger.log_discord_command("show", ctx.author)
+        post = reddit_utils.get_submission_from_url(reddit_client, url)
+        await discord_utils.send_post_as_msg(ctx, [post])
 
 
 def main() -> None:
     """ Main entrypoint for the bot """
     # bot must be global for function decorators
     global bot
-    global sub
+    global reddit_client
+    global pasta_subs
 
     # get arguments and create clients
     args = get_args()
     bot = get_discord_bot()
-    sub = get_subreddit_client(args)
+    reddit_client = get_reddit_client(args)
+    pasta_subs = reddit_client.subreddit(args.subreddits)
 
     # output logging header
     logger.set_basic_logger(filename=logger.get_log_filename(args))

@@ -29,3 +29,13 @@ def get_posts(
     logger.logging.info("Getting %s posts sorted by: %s", num, sort_type)
 
     return posts
+
+
+def get_submission_from_url(
+    reddit_client: praw.models.reddit, url: str
+) -> praw.models.reddit.submission:
+    # Split by /'s, find comments, find id, get submission
+    url_arr = url.split("/")
+    submission_id = url_arr[url_arr.index("comments") + 1]
+
+    return reddit_client.submission(submission_id)
