@@ -72,6 +72,16 @@ pip install -r requirements.txt
 python3 src/bot.py
 ```
 
+## Adding the bot to a server
+
+Anyone is welcome to add my bot running here:
+https://discord.com/api/oauth2/authorize?client_id=802369923845455933&permissions=280576&scope=bot
+
+As a bot, it has the following permissions:
+- Send Messages
+- Embed Links
+- Use External Emojis
+
 ## Libraries used
 
 - [PRAW](https://github.com/praw-dev/praw)
