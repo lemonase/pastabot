@@ -42,7 +42,6 @@ def set_basic_logger(
     logging.basicConfig(
         format="%(asctime)s:%(name)s:%(levelname)s - %(message)s",
         level=logging.INFO,
-        encoding="utf-8",
         handlers=log_handlers,
     )
 
