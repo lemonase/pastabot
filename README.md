@@ -10,19 +10,27 @@ in Discord.
 
 Command Prefixes = `pastabot!` | `pasta!` | `pb!` | `p!`
 
-Commands:
+Full Commands:
 
 - `pasta!get [hot|top|new] <count>`
-  Return a singular copypasta that is <count> posts from the top.
-  - aliases: `g`, `ge`
+  Get a singular copypasta that is \<count\> posts from the top.
 - `pasta!list [hot|top|new] <count>`
-  Lists the titles of the top <count> copypasta posts.
-  - aliases: `l`, `li`
+  Lists title of the top \<count\> copypasta posts.
 - `pasta!rand [hot|top|new] [<count>]`
-  Get a random copypasta where <count> is the max. (Default is 50)
-  - aliases: `r`, `random`
+  Get a random copypasta where \<count\> is the max. (Default is 50)
 - `pasta!show <url>`
-  - aliases: `s`
+  Sends a message with the contents of post body from the URL supplied
+
+Short Commands:
+
+- `pasta!get`
+  - alias: `p!g`
+- `pasta!list`
+  - alias: `p!l`
+- `pasta!random`
+  - alias: `p!r`
+- `pasta!show`
+  - alias: `p!s`
 
 ## Getting API keys
 
