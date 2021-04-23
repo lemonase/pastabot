@@ -62,8 +62,10 @@ project is run. In the future, I may decide to use a configuration file instead.
 
 ## Running the bot
 
-Below, I'm assuming all API credentials are in their corresponding
-environment variables.
+In the examples below, I assume that all API credentials are in their
+corresponding environment variables or in a `.env` file.
+
+### Locally
 
 ```sh
 git clone https://github.com/lemonase/pastabot.git
@@ -72,12 +74,30 @@ pip install -r requirements.txt
 python3 src/bot.py
 ```
 
+### Docker
+
+Running with a `.env` file
+
+```sh
+docker run -d --env-file $(PWD)/.env jamesdixon/pastabot:latest
+```
+
+Running with environment variables
+
+```sh
+docker run -d -e REDDIT_ID=<YOUR_ID> \
+              -e REDDIT_SECRET=<YOUR_SECRET> \
+              -e DISCORD_BOT_TOKEN=<YOUR_TOKEN> \
+              jamesdixon/pastabot
+```
+
 ## Adding the bot to a server
 
 Anyone is welcome to add my bot running here:
 https://discord.com/api/oauth2/authorize?client_id=802369923845455933&permissions=280576&scope=bot
 
 As a bot, it has the following permissions:
+
 - Send Messages
 - Embed Links
 - Use External Emojis
