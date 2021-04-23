@@ -109,11 +109,13 @@ def get_discord_bot() -> discord.ext.commands.bot.Bot:
     p!rand top 10
     Get random submission from 10 top pastas
 
+    p!list top 10
+    List 10 submissions from top
+
     p!get new 10
     Get 10th submission from new
 
-    p!list top 10
-    List 10 submissions from top
+    p!show https://www.reddit.com/r/copypasta/comments/luau3v/if_you_repost_a_popular_copypasta_thats_less_than/
     """
     pastabot = commands.Bot(
         command_prefix=commands.when_mentioned_or("pasta!", "pastabot!", "pb!", "p!"),
@@ -133,6 +135,13 @@ def create_bot_callbacks() -> None:
         await bot.change_presence(
             status=discord.Status.online, activity=discord.Game("pasta!help")
         )
+
+    @bot.event
+    async def on_command_error(ctx, error):
+        if isinstance(error, discord.ext.commands.errors.CommandNotFound):
+            await ctx.send(
+                "That command wasn't found! Sorry :(\nUse `pasta!help` for a list of commands."
+            )
 
     @bot.command(
         help="""Lists a number posts from a sort type.

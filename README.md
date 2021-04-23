@@ -21,6 +21,8 @@ Commands:
 - `pasta!rand [hot|top|new] [<count>]`
   Get a random copypasta where <count> is the max. (Default is 50)
   - aliases: `r`, `random`
+- `pasta!show <url>`
+  - aliases: `s`
 
 ## Getting API keys
 
