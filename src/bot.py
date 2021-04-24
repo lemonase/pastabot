@@ -23,6 +23,15 @@ __version__ = "0.0.4"
 DEFAULT_SUBS = "copypasta+emojipasta"
 
 
+def exit_err_arg(bad_arg: str, cmd_parser: argparse.ArgumentParser):
+    """ Prints a bad argument and exits """
+    print(
+        f"Error: please supply {bad_arg} as environment variable or flag",
+        file=sys.stderr,
+    )
+    sys.exit(cmd_parser.print_usage())
+
+
 def get_args() -> argparse.Namespace:
     """ Returns arguments passed in from the command line """
     load_dotenv()
@@ -54,23 +63,11 @@ def get_args() -> argparse.Namespace:
     args = cmd_parser.parse_args()
 
     if not args.reddit_id:
-        print(
-            "Error: please supply REDDIT_ID as environment variable or flag",
-            file=sys.stderr,
-        )
-        sys.exit(cmd_parser.print_usage())
+        exit_err_arg("REDDIT_ID", cmd_parser)
     if not args.reddit_secret:
-        print(
-            "Error: please supply REDDIT_SECRET as environment variable or flag",
-            file=sys.stderr,
-        )
-        sys.exit(cmd_parser.print_usage())
+        exit_err_arg("REDDIT_SECRET", cmd_parser)
     if not args.discord_bot_token:
-        print(
-            "Error: please supply DISCORD_BOT_TOKEN as environment variable or flag",
-            file=sys.stderr,
-        )
-        sys.exit(cmd_parser.print_usage())
+        exit_err_arg("DISCORD_BOT_TOKEN", cmd_parser)
 
     if args.version:
         print("PastaBot ver {}".format(__version__))
