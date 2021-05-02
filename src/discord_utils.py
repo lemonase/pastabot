@@ -13,8 +13,8 @@ async def send_post_as_msg(ctx, posts, post_limit=1) -> None:
                 if len(post.selftext) < 2000:
                     await ctx.send(post.selftext)
                 else:
-                    for m in range(0, len(post.selftext), 1500):
-                        await ctx.send(post.selftext[m : m + 1500])
+                    for msg in range(0, len(post.selftext), 1500):
+                        await ctx.send(post.selftext[msg : msg + 1500])
             await ctx.send("sauce: " + post.url)
 
 

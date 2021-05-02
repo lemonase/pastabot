@@ -20,6 +20,7 @@ import logger
 import reddit_utils
 
 __version__ = "0.0.4"
+UA_STRING = "PastaBot " + __version__
 DEFAULT_SUBS = "copypasta+emojipasta"
 
 
@@ -55,7 +56,7 @@ def get_args() -> argparse.Namespace:
         type=str,
         default=os.environ.get("REDDIT_SECRET"),
     )
-    cmd_parser.add_argument("--reddit-ua", type=str, default="PastaBot " + __version__)
+    cmd_parser.add_argument("--reddit-ua", type=str, default=UA_STRING)
     cmd_parser.add_argument("--subreddits", type=str, default=DEFAULT_SUBS)
     cmd_parser.add_argument("--log-path", type=pathlib.Path)
     cmd_parser.add_argument("--version", action="store_true")
