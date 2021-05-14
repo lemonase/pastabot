@@ -6,7 +6,22 @@ This bot fetches submissions from [/r/copypasta](https://reddit.com/r/copypasta)
 and [/r/emojipasta](https://reddit.com/r/emojipasta) and sends them as a message
 in Discord.
 
-## Commands
+## Adding the bot to a server
+
+Anyone is welcome to add the bot!
+
+Here is the link to authorize:
+https://discord.com/api/oauth2/authorize?client_id=802369923845455933&permissions=280576&scope=bot
+
+It should have the following permissions in the server:
+
+- Send Messages
+- Embed Links
+- Use External Emojis
+
+## Usage
+
+### Commands
 
 Command Prefixes = `pastabot!` | `pasta!` | `pb!` | `p!`
 
@@ -32,11 +47,13 @@ Short Commands:
 - `pasta!show`
   - alias: `p!s`
 
-## Getting API keys
+## Running
+
+### Getting API keys
 
 The script currently needs some API credentials from both Discord and Reddit.
 
-### Discord Client ID
+#### Discord Client ID
 
 1. Go to the Discord API portal:
    https://discord.com/developers/applications
@@ -50,7 +67,7 @@ The script currently needs some API credentials from both Discord and Reddit.
 
 5. Set your environment variable `DISCORD_BOT_TOKEN=<YOUR_BOT_TOKEN>`
 
-### Reddit ID and Secret
+#### Reddit ID and Secret
 
 1. Go to the Reddit app portal:
    https://www.reddit.com/prefs/apps/
@@ -63,34 +80,36 @@ The script currently needs some API credentials from both Discord and Reddit.
 4. Set environment variables `REDDIT_ID=<YOUR_CLIENT_ID>`
    and the Client Secret as `REDDIT_SECRET=<YOUR_CLIENT_SECRET>`
 
-### Storing credentials using dotenv
+#### Storing credentials using dotenv
 
-Environment variables can also be stored in a `.env` in the directory where the
+Environment variables can be stored in a `.env` in the directory where the
 project is run. In the future, I may decide to use a configuration file instead.
 
-## Running the bot
+### Running the bot
 
 In the examples below, I assume that all API credentials are in their
 corresponding environment variables or in a `.env` file.
 
-### Locally
+#### Running Locally
 
 ```sh
 git clone https://github.com/lemonase/pastabot.git
 cd pastabot
+python -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
 python3 src/bot.py
 ```
 
-### Docker
+#### Running with Docker
 
-Running with a `.env` file
+Running with a `.env` file in the current directory:
 
 ```sh
 docker run -d --env-file $(PWD)/.env jamesdixon/pastabot:latest
 ```
 
-Running with environment variables
+Running with environment variables:
 
 ```sh
 docker run -d -e REDDIT_ID=<YOUR_ID> \
@@ -98,17 +117,6 @@ docker run -d -e REDDIT_ID=<YOUR_ID> \
               -e DISCORD_BOT_TOKEN=<YOUR_TOKEN> \
               jamesdixon/pastabot
 ```
-
-## Adding the bot to a server
-
-Anyone is welcome to add my bot running here:
-https://discord.com/api/oauth2/authorize?client_id=802369923845455933&permissions=280576&scope=bot
-
-As a bot, it has the following permissions:
-
-- Send Messages
-- Embed Links
-- Use External Emojis
 
 ## Libraries used
 
