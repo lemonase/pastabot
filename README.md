@@ -10,10 +10,14 @@ in Discord.
 
 Anyone is welcome to add the bot!
 
-Here is the link to authorize:
-https://discord.com/api/oauth2/authorize?client_id=802369923845455933&permissions=280576&scope=bot
+You can check it out on [Top.gg](https://top.gg/bot/802369923845455933) (moderated site for Discord bots)
 
-It should have the following permissions in the server:
+or
+
+Follow [this link](https://discord.com/api/oauth2/authorize?client_id=802369923845455933&permissions=280576&scope=bot)
+directly to authorize and add to your server:
+
+It should have the following permissions in the server - no more and no less:
 
 - Send Messages
 - Embed Links
